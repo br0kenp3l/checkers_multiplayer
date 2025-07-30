@@ -51,7 +51,7 @@ for (let row = 0; row < 8; row++) {
       }
     }
 
-    // board clickable
+    //makes the board clickable
     square.addEventListener('click', () => handleSquareClick(square));
     board.appendChild(square);
     
@@ -232,13 +232,42 @@ function movePiece(fromSquare, toSquare) {
   fromSquare.classList.remove('highlight');
 
   //king logic
-  if ((currentPlayer === 'white' && toRow === 7) || (currentPlayer === 'black' && toRow === 0)) {
-    piece.classList.add('king');
-    piece.innerHTML = '<span class="king-label">♔</span>';
-  }
+  //(updated to check if piece is already a king and add kinging text pop-up)
+  if (((currentPlayer === 'white' && toRow === 7) || (currentPlayer === 'black' && toRow === 0)) && !piece.classList.contains('king')) {
+  piece.classList.add('king');
+  piece.innerHTML = '<span class="king-label">♔</span>';
+  showKingText(currentPlayer); // triggers "King me!" text pop-up
+ }
 }
 
+//pops up text saying "King me!" for respective piece/player colour being kinged
+//(updated to also play "king me" sound)
+function showKingText(playerColor) {
+  
+  //play "king me" sound
+  const audio = document.getElementById('kingMeSound');
+  if (audio) {
+    audio.currentTime = 0; //rewind in case of multiple triggers
+    audio.play();
+  }
+  //pop up "King me!" text
+  const container = document.getElementById('kingTextContainer');
+  const text = document.createElement('div');
+  text.classList.add('king-popup', playerColor);
+  text.innerText = 'King me!';
 
+  //semi-random position referencing 480x480 square at center of page
+  const x = Math.floor(Math.random() * 480);
+  const y = Math.floor(Math.random() * 480);
+
+  text.style.left = `${x}px`;
+  text.style.top = `${y}px`;
+  text.style.fontSize = `${40 + Math.floor(Math.random() * 20)}px`;
+
+  container.appendChild(text);
+
+  setTimeout(() => container.removeChild(text), 2500);
+}
 
 //general move validation
 function isValidMove(from, to) {
